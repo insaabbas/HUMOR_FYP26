@@ -6,6 +6,7 @@ import avatar2 from "../assets/avatar2.png"; // Boy
 import laughEmoji from '../assets/emojis/laugh.png'; // Added laugh emoji asset
 
 const GifCaption = () => {
+  // --- STATE MANAGEMENT ---
   const [scrolled, setScrolled] = useState(false);
   const [gifFile, setGifFile] = useState(null);
   const [preview, setPreview] = useState("");
@@ -14,7 +15,7 @@ const GifCaption = () => {
   const [showError, setShowError] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   
-  // Hero section ke liye auto-rotating sample captions state
+  // Array containing rotating sample captions for the hero section bubble
   const samplePrompts = [
     "POV: Me when my SQL query works on the first try and doesn't return a single error.",
     "Me explaining to my mom why sleeping 12 hours is productive.",
@@ -25,14 +26,17 @@ const GifCaption = () => {
 
   const location = useLocation();
 
-  // Caption automatic rotate karne ke liye loop effect
+  // --- EFFECT: ROTATE SAMPLE CAPTIONS ---
+  // Automatically rotates the text in the speech bubble every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSampleIndex((prevIndex) => (prevIndex + 1) % samplePrompts.length);
-    }, 5000); // Har 5 seconds baad change hoga
+    }, 5000); 
     return () => clearInterval(interval);
   }, []);
 
+  // --- EFFECT: WINDOW SCROLL LISTENER ---
+  // Handles navbar appearance and tracks section activation on scroll
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -52,12 +56,14 @@ const GifCaption = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // --- HANDLER: GIF FILE UPLOAD ---
+  // Validates if the selected file format is strictly a .gif image
   const handleGifUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.type === "image/gif") {
         setGifFile(file);
-        setPreview(URL.createObjectURL(file));
+        setPreview(URL.createObjectURL(file)); // Creates temporary local URL for visualization
         setShowError(false);
       } else {
         alert("Error: Only .gif files are allowed! Please select a valid GIF image.");
@@ -66,6 +72,8 @@ const GifCaption = () => {
     }
   };
 
+  // --- HANDLER: AI CAPTION GENERATION ---
+  // Sends the uploaded GIF file to the local Flask backend server
   const generateCaption = async () => {
     if (!gifFile) {
       setShowError(true);
@@ -80,6 +88,7 @@ const GifCaption = () => {
       const formData = new FormData();
       formData.append("image", gifFile);
 
+      // Fetch request directed to Flask backend api running on port 5001
       const response = await fetch("http://localhost:5001/predict", {
         method: "POST",
         body: formData,
@@ -90,7 +99,7 @@ const GifCaption = () => {
       if (!response.ok) {
         setCaption(data.error || "Backend Error: Unknown API Error");
       } else {
-        setCaption(data.caption);
+        setCaption(data.caption); // Stores successfully generated joke caption
       }
 
     } catch (error) {
@@ -101,6 +110,7 @@ const GifCaption = () => {
     setIsGenerating(false);
   };
 
+  // --- HANDLER: CLIPBOARD COPY FOR GENERATED CAPTION ---
   const copyToClipboard = () => {
     if (caption && caption !== "Sending to AI..." && !caption.startsWith("Error:")) {
       navigator.clipboard.writeText(caption);
@@ -110,6 +120,7 @@ const GifCaption = () => {
     }
   };
 
+  // --- HANDLER: CLIPBOARD COPY FOR FLOATING HERO BUBBLE CAPTIONS ---
   const copySampleToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     alert("Sample caption copied!");
@@ -117,6 +128,7 @@ const GifCaption = () => {
 
   return (
     <div className="lollify-app">
+      {/* ── EMBEDDED STYLES & ANIMATIONS ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Lobster&family=Poppins:wght@400;700;900&display=swap');
 
@@ -152,7 +164,7 @@ const GifCaption = () => {
           animation: movingGradient 12s infinite;
         }
 
-        /* ── Navbar ── */
+        /* ── Navbar Styles ── */
         .navbar { 
           display: flex; 
           align-items: center; 
@@ -186,7 +198,7 @@ const GifCaption = () => {
           content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--pink-glow); border-radius: 10px;
         }
 
-        /* ── Modern Split Hero Layout ── */
+        /* ── Modern Split Hero Layout Styles ── */
         .page-header { 
           padding: 160px 8% 100px; 
           display: grid;
@@ -321,7 +333,7 @@ const GifCaption = () => {
           border-color: transparent transparent rgba(255, 255, 255, 0.15) transparent;
         }
 
-        /* ── Lab & Structure ── */
+        /* ── Lab & Structure Styles ── */
         .lab-section { padding: 80px 5%; background: #fff; text-align: center; }
         .lab-container { background: #f0f0f0; border-radius: 60px; padding: 80px 40px; max-width: 1200px; margin: 0 auto; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border: 1px solid #ececef; }
         .lab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px; }
@@ -391,6 +403,7 @@ const GifCaption = () => {
         }
       `}</style>
 
+      {/* ── NAVIGATION BAR COMPONENT ── */}
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <Link to="/" className="nav-logo">Lollify</Link>
         <div className="nav-sections">
@@ -450,7 +463,7 @@ const GifCaption = () => {
         </div>
       </header>
 
-      {/* ── AI Caption Lab Section ── */}
+      {/* ── AI CAPTION LAB SECTION ── */}
       <section id="lab" className="lab-section">
         <div className="lab-container">
           <h2 style={{fontSize: '3rem', color: '#2d002d', fontWeight: '700'}}>
@@ -461,6 +474,7 @@ const GifCaption = () => {
           </p>
 
           <div className="lab-grid">
+            {/* Card 1: Select & Upload File */}
             <div className="lab-card-animated">
               <h3>Browse & Upload</h3>
               <div className="inner-box" style={{flexDirection: 'column', gap: '10px'}}>
@@ -470,6 +484,7 @@ const GifCaption = () => {
               <button className="lab-btn" onClick={() => document.getElementById('gif-upload-input').click()}>Select File</button>
             </div>
 
+            {/* Card 2: Local Upload Verification & Preview Display */}
             <div className="lab-card-animated">
               <h3>GIF Preview</h3>
               <div className="inner-box">
@@ -486,6 +501,7 @@ const GifCaption = () => {
               </button>
             </div>
 
+            {/* Card 3: Response Viewer & Action Clipboard Panel */}
             <div className="lab-card-animated">
               <h3>Crack a Joke</h3>
               <div className="inner-box">
@@ -497,7 +513,7 @@ const GifCaption = () => {
         </div>
       </section>
 
-      {/* ── Footer ── */}
+      {/* ── FOOTER LAYER COMPONENT ── */}
       <footer className="footer animated-bg">
         <div className="footer-grid">
           <div>
