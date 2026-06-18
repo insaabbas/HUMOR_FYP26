@@ -23,9 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 .env
-
-node_modules/
-venv/
-.env
-dist/
-build/

@@ -17,12 +17,15 @@ const GifPrompt = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
+
     window.addEventListener("scroll", handleScroll);
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleGifUpload = (e) => {
     const file = e.target.files[0];
+
     if (file) {
       setGifFile(file);
       setPreview(URL.createObjectURL(file));
@@ -31,11 +34,13 @@ const GifPrompt = () => {
 
   const generateJoke = async (e) => {
     e.preventDefault();
+
     setIsGenerating(true);
     setJoke("");
 
     try {
       const formData = new FormData();
+
       formData.append("prompt", prompt);
 
       if (gifFile) {
@@ -48,11 +53,13 @@ const GifPrompt = () => {
       });
 
       const data = await response.json();
+
       setJoke(data.joke || data.error || "AI couldn’t generate 😅");
 
     } catch (error) {
       console.log(error);
       setJoke("Server error ❌");
+
     } finally {
       setIsGenerating(false);
     }
@@ -70,13 +77,28 @@ const GifPrompt = () => {
           --pink-glow: #db2777;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Poppins', sans-serif;
+        }
 
         @keyframes movingGradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
+          0% {
+            background-position: 0% 50%;
+          }
+
+          50% {
+            background-position: 100% 50%;
+          }
+
+          100% {
+            background-position: 0% 50%;
+          }
         }
 
         .animated-bg {
@@ -135,7 +157,6 @@ const GifPrompt = () => {
           color: var(--bright-yellow);
         }
 
-        /* ✅ AVATAR FIXED (NO SHAPE) */
         .avatar-container {
           text-align: center;
           margin-top: 20px;
@@ -150,9 +171,42 @@ const GifPrompt = () => {
         }
 
         @keyframes floatAvatar {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-12px); }
-          100% { transform: translateY(0px); }
+          0% {
+            transform: translateY(0px);
+          }
+
+          50% {
+            transform: translateY(-12px);
+          }
+
+          100% {
+            transform: translateY(0px);
+          }
+        }
+
+        /* ✅ BLINKING DOWN ARROW */
+        .scroll-arrow {
+          font-size: 4rem;
+          color: var(--bright-yellow);
+          margin-top: 20px;
+          animation: blinkArrow 1s infinite;
+        }
+
+        @keyframes blinkArrow {
+          0% {
+            opacity: 0;
+            transform: translateY(0px);
+          }
+
+          50% {
+            opacity: 1;
+            transform: translateY(10px);
+          }
+
+          100% {
+            opacity: 0;
+            transform: translateY(0px);
+          }
         }
 
         .lab-section {
@@ -242,56 +296,103 @@ const GifPrompt = () => {
 
       {/* NAVBAR */}
       <nav className="navbar">
-        <Link to="/" className="nav-logo">Lollify</Link>
+        <Link to="/" className="nav-logo">
+          Lollify
+        </Link>
 
         <div className="nav-pages">
-          <Link to="/" className={location.pathname === "/" ? "active-link" : ""}>Home</Link>
-          <Link to="/text-humor">Text Humor</Link>
-          <Link to="/gif-caption">Gif Caption</Link>
-          <Link to="/gif-prompt" className="active-link">Gif Prompt</Link>
+          <Link
+            to="/"
+            className={location.pathname === "/" ? "active-link" : ""}
+          >
+            Home
+          </Link>
+
+          <Link to="/text-humor">
+            Text Humor
+          </Link>
+
+          <Link to="/gif-caption">
+            Gif Caption
+          </Link>
+
+          <Link to="/gif-prompt" className="active-link">
+            Gif Prompt
+          </Link>
         </div>
       </nav>
 
       {/* HEADER */}
       <header className="page-header animated-bg">
+
         <h1 className="hero-h1">
           Gifify & <span className="highlight">Laughify</span>
         </h1>
 
-        {/* ✅ AVATAR */}
+        {/* AVATAR */}
         <div className="avatar-container">
           <img className="avatar" src={avatar} alt="avatar" />
         </div>
 
-        <p style={{marginTop: '20px', fontSize: '1.2rem', opacity: 0.9}}>
+        <p
+          style={{
+            marginTop: '20px',
+            fontSize: '1.2rem',
+            opacity: 0.9
+          }}
+        >
           Upload a GIF, hit generate, and let the fun begin! 😄
         </p>
+
+        {/* BLINKING ARROW */}
+        <div className="scroll-arrow">
+          ↓
+        </div>
+
       </header>
 
       {/* LAB */}
       <section className="lab-section">
+
         <div className="lab-container">
-          <h2 style={{fontSize:'2.5rem'}}>
-            The Comedy <span style={{color:'var(--pink-glow)'}}>Lab</span>
+
+          <h2 style={{ fontSize: '2.5rem' }}>
+            The Comedy <span style={{ color: 'var(--pink-glow)' }}>Lab</span>
           </h2>
 
           <div className="lab-grid">
 
             <div className="lab-card">
+
               <h3>🎬 Choose GIF</h3>
 
               <label className="upload-btn">
                 Upload GIF
-                <input type="file" accept="image/gif" hidden onChange={handleGifUpload} />
+
+                <input
+                  type="file"
+                  accept="image/gif"
+                  hidden
+                  onChange={handleGifUpload}
+                />
               </label>
 
-              {preview && <img src={preview} className="preview" />}
+              {preview && (
+                <img
+                  src={preview}
+                  className="preview"
+                  alt="preview"
+                />
+              )}
+
             </div>
 
             <div className="lab-card">
+
               <h3>✍️ Generate Joke</h3>
 
               <form onSubmit={generateJoke}>
+
                 <textarea
                   placeholder="Write prompt here..."
                   value={prompt}
@@ -301,16 +402,152 @@ const GifPrompt = () => {
                 />
 
                 <button className="lab-btn">
-                  {isGenerating ? "Generating..." : "Generate AI Joke"}
+                  {isGenerating
+                    ? "Generating..."
+                    : "Generate AI Joke"}
                 </button>
+
               </form>
 
-              {joke && <div className="result-box">{joke}</div>}
+              {joke && (
+                <div className="result-box">
+                  {joke}
+                </div>
+              )}
+
             </div>
 
           </div>
+
         </div>
+
       </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+
+        <div className="footer-grid">
+
+          <div>
+            <h3>Lollify</h3>
+
+            <p style={{ marginTop: '15px' }}>
+              Making the world brighter, one punchline at a time.
+            </p>
+          </div>
+
+          <div>
+            <h4>Explore</h4>
+
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
+                marginTop: '15px'
+              }}
+            >
+              <Link
+                to="/"
+                style={{
+                  color: 'white',
+                  textDecoration: 'none'
+                }}
+              >
+                Home
+              </Link>
+
+              <Link
+                to="/text-humor"
+                style={{
+                  color: 'white',
+                  textDecoration: 'none'
+                }}
+              >
+                Text Humor
+              </Link>
+
+              <Link
+                to="/gif-caption"
+                style={{
+                  color: 'white',
+                  textDecoration: 'none'
+                }}
+              >
+                Gif Caption
+              </Link>
+
+              <Link
+                to="/gif-prompt"
+                style={{
+                  color: 'white',
+                  textDecoration: 'none'
+                }}
+              >
+                Gif Prompt
+              </Link>
+            </div>
+          </div>
+
+          <div>
+
+            <h4>Newsletter</h4>
+
+            <p
+              style={{
+                fontSize: '0.9rem',
+                margin: '15px 0'
+              }}
+            >
+              Get the week's best jokes.
+            </p>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: '5px'
+              }}
+            >
+              <input
+                type="email"
+                placeholder="Email"
+                style={{
+                  padding: '10px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  flex: 1
+                }}
+              />
+
+              <button
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'var(--bright-yellow)',
+                  fontWeight: 'bold',
+                  color: 'var(--deep-purple)'
+                }}
+              >
+                Join
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <p
+          style={{
+            textAlign: 'center',
+            marginTop: '60px',
+            opacity: 0.6
+          }}
+        >
+          © 2026 Lollify — Designed for Comedy & Code
+        </p>
+
+      </footer>
 
     </div>
   );

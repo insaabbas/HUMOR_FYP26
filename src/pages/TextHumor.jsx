@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import kidsLaughImg from '../assets/emojis/kids laugh.png'; 
-import StorySlider from '../components/StorySlider';
 
 const TextHumor = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -16,8 +15,6 @@ const TextHumor = () => {
   const [word2, setWord2] = useState("");
   const [wordJoke, setWordJoke] = useState("");
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
-
-  const [shareToast, setShareToast] = useState("");
 
   const location = useLocation();
 
@@ -40,7 +37,12 @@ const TextHumor = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  
+  const humorStories = [
+    { title: "The Senior Dev's Prayer", content: "Our Father, who art in Silicon Valley, hallowed be thy Code. Thy Kingdom come, thy Bug be fixed, on Localhost as it is in Production.", tag: "Coding" },
+    { title: "Internet Logic", content: "I have a 'stable' internet connection. It’s so stable that it hasn't moved or downloaded anything in 20 minutes.", tag: "Tech" },
+    { title: "The CSS Marriage", content: "Why did the HTML break up with CSS? Because they just weren't in the same 'class' anymore.", tag: "Coding" },
+    { title: "The Gym Membership", content: "I asked my trainer if he could teach me how to do the splits. He asked, 'How flexible are you?' I said, 'I can't make Tuesdays.'", tag: "Life" }
+  ];
 
   const generateHeadlineJoke = async (e) => {
     e.preventDefault();
@@ -76,13 +78,6 @@ const TextHumor = () => {
     } finally { setIsGeneratingWord(false); }
   };
 
-  
-
-  const handleShare = (story) => {
-    navigator.clipboard?.writeText(`"${story.content}" — ${story.title} | Lollify`);
-    setShareToast(`"${story.title}" copied!`);
-    setTimeout(() => setShareToast(""), 2500);
-  };
   return (
     <div className="lollify-app">
       <style>{`
@@ -102,24 +97,6 @@ const TextHumor = () => {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
-        }
-
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes popIn {
-          0% { transform: scale(0.85); opacity: 0; }
-          60% { transform: scale(1.06); }
-          100% { transform: scale(1); opacity: 1; }
-        }
-
-   
-
-        @keyframes toastIn {
-          0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
-          100% { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
         .animated-bg {
@@ -142,115 +119,28 @@ const TextHumor = () => {
         .navbar a.active-link { color: var(--pink-glow) !important; }
         .navbar a.active-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--pink-glow); border-radius: 10px; }
 
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes imgFloat {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-14px); }
-        }
-
-        .page-header {
-          padding: 160px 8% 100px;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          align-items: center;
-          gap: 60px;
-          color: white;
+        /* HEADER LAYOUT: Text Centered, Image Pinned Right */
+        .page-header { 
+          padding: 150px 5% 80px; 
+          display: flex; 
+          align-items: center; 
+          justify-content: space-between; 
+          color: white; 
           overflow: hidden;
           position: relative;
-          min-height: 88vh;
+        }
+        .hero-text-side { flex: 1; text-align: center; }
+        .hero-image-side { position: absolute; right: 3%; top: 60%; transform: translateY(-50%); display: flex; align-items: center; }
+        .hero-img-element { max-width: 200px; height: auto;  }
+
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+          100% { transform: translateY(0px); }
         }
 
-        .hero-text-side { animation: fadeUp 0.8s ease both; }
-
-        .hero-eyebrow {
-          display: inline-block;
-          background: rgba(255,221,0,0.15);
-          border: 1px solid rgba(255,221,0,0.4);
-          color: var(--bright-yellow);
-          font-size: 0.78rem;
-          font-weight: 800;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          padding: 6px 18px;
-          border-radius: 30px;
-          margin-bottom: 22px;
-        }
-
-        .hero-h1 {
-          font-size: clamp(3rem, 5.5vw, 5rem);
-          font-weight: 900;
-          line-height: 1.08;
-          margin-bottom: 20px;
-          letter-spacing: -0.02em;
-        }
-
+        .hero-h1 { font-size: 5rem; font-weight: 900; line-height: 1.1; }
         .highlight { color: var(--bright-yellow); }
-
-        .hero-desc {
-          font-size: 1.05rem;
-          opacity: 0.72;
-          line-height: 1.8;
-          max-width: 400px;
-          margin-bottom: 36px;
-        }
-
-        .hero-btn {
-          display: inline-block;
-          background: var(--bright-yellow);
-          color: var(--deep-purple);
-          padding: 14px 34px;
-          border-radius: 50px;
-          font-weight: 900;
-          font-size: 0.95rem;
-          text-decoration: none;
-          transition: transform 0.2s, box-shadow 0.2s;
-          box-shadow: 0 6px 24px rgba(255,221,0,0.3);
-        }
-        .hero-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(255,221,0,0.45); }
-
-        .hero-image-side {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          animation: fadeUp 0.8s ease 0.2s both;
-        }
-
-        .hero-img-wrap {
-          position: relative;
-          width: 340px;
-          height: 340px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .hero-img-ring {
-          position: absolute;
-          inset: 0;
-          border-radius: 50%;
-          border: 2px dashed rgba(255,221,0,0.3);
-          animation: imgFloat 5s ease-in-out infinite;
-        }
-
-        .hero-img-ring-2 {
-          position: absolute;
-          inset: 20px;
-          border-radius: 50%;
-          border: 1px solid rgba(255,255,255,0.1);
-          animation: imgFloat 5s ease-in-out infinite reverse;
-        }
-
-        .hero-img-element {
-          width: 220px;
-          height: auto;
-          position: relative;
-          z-index: 2;
-          animation: imgFloat 5s ease-in-out infinite;
-          filter: drop-shadow(0 20px 40px rgba(219,39,119,0.4));
-        }
 
         .lab-section { padding: 60px 5%; background: #fff; text-align: center; }
         .lab-container { background: #f0f0f0; border-radius: 40px; padding: 50px 5%; max-width: 1100px; margin: 0 auto; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border: 1px solid #ececef; }
@@ -265,44 +155,12 @@ const TextHumor = () => {
         .lab-btn { background: var(--bright-yellow); color: var(--deep-purple); padding: 14px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .result-box { margin-top: 20px; padding: 15px; border-radius: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); }
 
-        /* ── Vault Filters ── */
-        .vault-filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 50px; flex-wrap: wrap; }
-        .filter-pill {
-          padding: 7px 20px;
-          border-radius: 6px;
-          border: 1.5px solid #e5e7eb;
-          background: white;
-          font-weight: 700;
-          font-size: 0.82rem;
-          cursor: pointer;
-          transition: all 0.2s;
-          color: #777;
-          letter-spacing: 0.03em;
-        }
-       
-        /* ── Toast ── */
-        .share-toast {
-          position: fixed;
-          bottom: 30px;
-          left: 50%;
-          transform: translateX(-50%);
-          background: var(--deep-purple);
-          color: var(--bright-yellow);
-          padding: 12px 28px;
-          border-radius: 30px;
-          font-weight: 700;
-          font-size: 0.9rem;
-          z-index: 9999;
-          animation: toastIn 0.3s ease;
-          box-shadow: 0 8px 24px rgba(45,0,45,0.3);
-          white-space: nowrap;
-        }
+        .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+        .story-card { background: white; padding: 40px; border-radius: 30px; text-align: left; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border-top: 6px solid var(--pink-glow); }
 
         .footer { color: white; padding: 80px 5% 40px; border-top: 6px solid var(--bright-yellow); margin-top: 100px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1.5fr; gap: 50px; }
       `}</style>
-
-      {shareToast && <div className="share-toast">{shareToast}</div>}
 
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <Link to="/" className="nav-logo">Lollify</Link>
@@ -320,22 +178,11 @@ const TextHumor = () => {
 
       <header className="page-header animated-bg">
         <div className="hero-text-side">
-          <span className="hero-eyebrow">✦ Text-Based Comedy</span>
-          <h1 className="hero-h1">
-            The Humor<br /><span className="highlight">Vault</span>
-          </h1>
-          <p className="hero-desc">
-            Exclusively curated jokes, stories, and AI-powered punchlines — all in one place.
-          </p>
-          <a href="#trending" className="hero-btn">Browse Stories →</a>
+          <h1 className="hero-h1">The Humor <span className="highlight">Vault</span></h1>
+          <p style={{marginTop: '15px', fontSize: '1.2rem', opacity: 0.9}}>Exclusively curated text-based comedy.</p>
         </div>
-
         <div className="hero-image-side">
-          <div className="hero-img-wrap">
-            <div className="hero-img-ring" />
-            <div className="hero-img-ring-2" />
-            <img src={kidsLaughImg} alt="Laughing kids" className="hero-img-element" />
-          </div>
+          <img src={kidsLaughImg} alt="Laughing kids" className="hero-img-element" />
         </div>
       </header>
 
@@ -366,27 +213,17 @@ const TextHumor = () => {
           )}
         </div>
       </section>
-{/* Latest Stories Section */}
-      <section id="trending" style={{padding: '90px 5%', background: '#fafafa'}}>
-        <div style={{maxWidth: '1200px', margin: '0 auto'}}>
 
-          {/* Section header */}
-          <div style={{marginBottom: '48px'}}>
-            <p style={{fontSize: '0.78rem', fontWeight: '800', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--pink-glow)', marginBottom: '10px'}}>Curated Picks</p>
-            <div style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px'}}>
-              <h2 style={{fontSize: '2.6rem', fontWeight: '900', color: 'var(--deep-purple)', lineHeight: 1.1}}>
-                Latest <span style={{color: 'var(--pink-glow)'}}>Stories</span>
-              </h2>
-              <p style={{color: '#aaa', fontSize: '0.85rem', fontWeight: '600'}}>Click a card to reveal the punchline</p>
+      <section id="trending" style={{padding: '80px 5%', textAlign: 'center'}}>
+        <h2 style={{fontSize:'2.8rem', color: '#2d002d', marginBottom: '40px'}}>Latest <span style={{color: 'var(--pink-glow)'}}>Stories</span></h2>
+        <div className="story-grid">
+          {humorStories.map((story, index) => (
+            <div key={index} className="story-card">
+              <span style={{fontSize: '0.8rem', fontWeight: '900', color: 'var(--pink-glow)', textTransform: 'uppercase'}}>{story.tag}</span>
+              <h3 style={{margin: '15px 0', color: '#2d002d'}}>{story.title}</h3>
+              <p style={{lineHeight: '1.6', color: '#555'}}>{story.content}</p>
             </div>
-            <div style={{width: '48px', height: '4px', background: 'var(--bright-yellow)', borderRadius: '2px', marginTop: '16px'}} />
-          </div>
-
-        
-
-        <StorySlider handleShare={handleShare} />
-
-          
+          ))}
         </div>
       </section>
 
