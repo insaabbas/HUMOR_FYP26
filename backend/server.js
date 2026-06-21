@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
 
@@ -9,79 +8,90 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- SUPABASE CONFIGURATION ---
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+// ======================
+// COLAB API URL
+// ======================
+const COLAB_API_URL = process.env.COLAB_API_URL;
 
+// ======================
+// MAIN API ROUTE
+// ======================
 app.post('/api/generate-joke', async (req, res) => {
     try {
         const { prompt } = req.body;
-        console.log("🚀 Lollify requesting joke for:", prompt);
 
-        const response = await fetch("https://insaabbas-lollify-fast.hf.space/gradio_api/call/predict", {
+        console.log("🚀 Request:", prompt);
+
+        // ======================
+        // CALL COLAB MODEL
+        // ======================
+        const response = await fetch(`${COLAB_API_URL}/generate`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.HF_TOKEN}`
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify({ data: [prompt] })
+            body: JSON.stringify({ prompt })
         });
 
-        const { event_id } = await response.json();
-        
-        if (!event_id) throw new Error("Check your Space status.");
+        if (!response.ok) {
+            throw new Error("Colab API failed");
+        }
 
-        const resultResponse = await fetch(`https://insaabbas-lollify-fast.hf.space/gradio_api/call/predict/${event_id}`);
-        const text = await resultResponse.text();
-        
-        const match = text.match(/data: \["(.*)"\]/);
-        const jokeRaw = match ? match[1] : "The alchemy failed! Try different words.";
+        const data = await response.json();
+        const jokeRaw = data.response || "No response from model";
 
-        // --- DATABASE LOGIC START ---
-        const jokeFormatted = jokeRaw.replace(/\\n/g, '\n');
+        let jokeFormatted = jokeRaw.replace(/\\n/g, '\n');
 
-        // Logic to select your 3 specific categories
-        let selectedCategory = 'joke of the day'; 
-        if (prompt.toLowerCase().includes("word") || prompt.toLowerCase().includes("alchemy")) {
+        // ======================
+        // CLEANUP: EXTRACT ONLY THE JOKE
+        // ======================
+        if (jokeFormatted.includes('### Response:')) {
+            jokeFormatted = jokeFormatted.split('### Response:')[1].trim();
+        }
+
+        // ======================
+        // CATEGORY LOGIC (optional)
+        // ======================
+        let selectedCategory = 'joke of the day';
+
+        if (prompt.toLowerCase().includes("word")) {
             selectedCategory = 'Word pairs';
         } else if (prompt.toLowerCase().includes("headline")) {
             selectedCategory = 'headline';
         }
 
-        // Insert into the 5-column table: id (auto), category, input, joke, timestamp (auto)
-        const { error: dbError } = await supabase
-            .from('jokes')
-            .insert([
-                { 
-                    category: selectedCategory, 
-                    input: prompt,    // Added: Saves the words or headline entered
-                    joke: jokeFormatted 
-                }
-            ]);
+        console.log("📂 Category:", selectedCategory);
 
-        if (dbError) {
-            console.error("⚠️ Database storage failed:", dbError.message);
-        } else {
-            console.log(`💾 Saved to Lollify-DB! Input: "${prompt.substring(0, 20)}..."`);
-        }
-        // --- DATABASE LOGIC END ---
-
-        console.log("✨ Success!");
-        res.json({ joke: jokeFormatted });
+        // ======================
+        // RESPONSE TO FRONTEND
+        // ======================
+        res.json({
+            joke: jokeFormatted,
+            category: selectedCategory
+        });
 
     } catch (error) {
-        console.error("❌ Connection Error:", error.message);
-        res.status(500).json({ error: "Space Busy", details: error.message });
+        console.error("❌ Error:", error.message);
+
+        res.status(500).json({
+            error: "Server Error",
+            details: error.message
+        });
     }
 });
 
-// Test Supabase connection on startup
-const verifyDb = async () => {
-    const { error } = await supabase.from('jokes').select('id').limit(1);
-    if (error) console.error("❌ DB Connection Error:", error.message);
-    else console.log("📡 Connected to Supabase!");
-};
-verifyDb();
+// ======================
+// START SERVER
+// ======================
+app.listen(5000, () => {
+    console.log("✅ Backend running on http://localhost:5000");
+});
 
-app.listen(5000, () => console.log(`✅ Lollify Backend live at http://localhost:5000`));
+
+
+
+
+
+
+
+
