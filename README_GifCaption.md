@@ -15,8 +15,6 @@ An optimized fine-tuned vision-language engine built with Salesforce BLIP. No hi
   * [Frontend Setup](#frontend-setup)
   * [Backend Setup](#backend-setup)
 * [Environment Variables](#environment-variables)
-* [Model Training Parameters](#model-training-parameters)
-* [Evaluation Metrics](#evaluation-metrics)
 * [Security Notes](#security-notes)
 * [License](#license)
 
@@ -132,7 +130,7 @@ POST http://localhost:5001/predict
 Environment Variables
 For isolated production configurations, set up a .env deployment file inside your active directories.
 
-Frontend Configuration (frontend/.env):
+## Frontend Configuration (frontend/.env):
 
 Plaintext
 VITE_BACKEND_API_URL=http://localhost:5001
@@ -142,12 +140,12 @@ Plaintext
 FLASK_ENV=development
 FLASK_RUN_PORT=5001
 
-Security Notes
+## Security Notes
 CORS Scope Restrictions: The Flask application gateway currently executes broad access configurations (CORS(app)). For secure live deployment spaces, lock down source domain access strictly to your client URL pattern.
 
 Beam-Search Interception: Inference routines employ strict configuration parameters (max_length=45, repetition_penalty=1.2, num_beams=5) inside the generation codeblock to secure systems against continuous looping traps.
 
-License
+## License
 This project module is released under the MIT License.
 
 © 2026 Lollify — Designed for Comedy & Code
