@@ -105,7 +105,8 @@ The processed image is passed into a Hugging Face transformer pipeline which gen
 The output is post-processed (whitespace cleanup, token filtering) and returned as a JSON response
 
 Getting Started
-Prerequisites
+## Prerequisites
+
 Node.js (v18+) and npm environment profile
 
 Python 3.10+ environment runtime with a working C++ compiler installation
