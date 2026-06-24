@@ -1,7 +1,6 @@
 🎬 Lollify — GIF Caption Wizard
 
-Lollify is an AI-powered humor playground. Transform your dynamic graphics, evaluate vision-language tensors, and instantly turn any standard .gif into a custom comedic masterpiece—all wrapped in an over-the-top animated UI that bridges Deep Learning with automated punchlines.
-
+Lollify is an AI-powered humor playground. Simply upload your favorite dynamic GIF, and our fine-tuned vision-language engine will instantly analyze the frames to generate a hilarious, context-aware humorous caption!
 An optimized fine-tuned vision-language engine built with Salesforce BLIP. No high-end server configurations or cloud computation clearance required.
 
 ---
