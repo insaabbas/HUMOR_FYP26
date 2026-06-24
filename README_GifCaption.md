@@ -79,6 +79,32 @@ The Flask engine captures incoming bytes, strips transparency arrays, maps the u
 ├── backend/
 │   └── app.py                      # Flask Server, WSGI pipeline, model prediction
 └── README_Gifcaption.md            # System deployment manual and training docs
+
+Core Execution Pipeline
+1. Client-Side Input Handling
+
+User uploads a GIF file through the React interface. The system validates file type using MIME checking (image/gif).
+
+2. Payload Construction
+
+The file is encapsulated inside a FormData object and transmitted via HTTP POST request to backend API.
+
+3. Backend Processing
+
+Flask receives the request and performs:
+
+File validation
+Image decoding using PIL
+Frame extraction using Image.seek(0)
+Conversion to RGB format
+4. Model Inference
+
+The processed image is passed into a Hugging Face transformer pipeline which generates a natural language caption.
+
+5. Response Generation
+
+The output is post-processed (whitespace cleanup, token filtering) and returned as a JSON response
+
 Getting Started
 Prerequisites
 Node.js (v18+) and npm environment profile
