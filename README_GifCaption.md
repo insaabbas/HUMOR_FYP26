@@ -48,21 +48,22 @@ An optimized fine-tuned vision-language engine built with Salesforce BLIP. No hi
 ---
 
 ## Architecture
-React Frontend (Vite, :5173)
+React Frontend (Client Layer - Port 5173)
 │
-│  POST /predict (Multi-part FormData Stream)
+│ HTTP POST (/predict)
 ▼
-Flask Backend Gateway (:5001)
+Flask Backend (API Layer - Port 5001)
 │
-├─► [PIL image.seek(0)] ──► Extracts Baseline Anchor Frame
-├─► [image.thumbnail]    ──► Drops Spatial Resolution Dimensions
+│ Image preprocessing + request validation
 ▼
-Fine-Tuned BLIP Model Model Trunk (Warda-yousaf/my-gif-captioner)
+Hugging Face Transformer Model (Inference Layer)
 │
-├─► NLP Token Cleaning Loops & Prefix Slicing Filters
-├─► Contextual Template Mixing (random.choice)
 ▼
-Clean JSON Return String ──► Returned to Application Client Viewport
+Generated Caption Output (JSON Response)
+### Key Architectural Principles:
+- Separation of concerns between UI, API, and ML inference
+- Stateless frontend communication via REST API
+- Centralized model inference pipeline
 
 The Flask engine captures incoming bytes, strips transparency arrays, maps the underlying matrix through a 12-layer Vision Transformer (ViT) encoder and BERT text decoder layout, purifies repetitive baseline patterns, and sends clean JSON strings back to the user application viewport.
 
